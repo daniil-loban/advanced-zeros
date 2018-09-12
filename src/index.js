@@ -1,4 +1,3 @@
-// ADVANCED
 module.exports = function getZerosCount(number, base) {
 
     var isPrime = function(num) {
@@ -7,38 +6,42 @@ module.exports = function getZerosCount(number, base) {
       return num !== 1;
     }
 
-    var maxSimpleMultiplier = function(number){
-        //var all = [1];
-        var div = 2;
-        while(number > 1){
-            if (isPrime(div) || isPrime(Math.floor(number/div) )){
-                while( number % div == 0){
-                    number = number / div;
-                    //all.push(div)
-                }
-            }    
-            div++;
+    var getPrimaryMultipliers = function(baseNumber){
+        var allPrimes = {};
+        var divider = 2;
+        var tempNumber = baseNumber;
+        while(divider <= baseNumber){
+            if (isPrime(divider)){
+                while ( tempNumber % divider == 0){
+                    tempNumber = tempNumber / divider;
+                    if (allPrimes[divider]){
+                       allPrimes[divider]+=1;
+                    } else {
+                       allPrimes[divider]=1;     
+                    }
+                }   
+            } 
+            divider++;
+            tempNumber = baseNumber;    
         }
-        //console.log(all);    
-        return --div;    
+        return allPrimes;    
     }
 
-    var getFactorialZerosCount = function(number, base){
-       var result = 0
-       for (var i = 1; i <= number; i++) {
-           var temp = i
-           while (temp % base == 0){ 
-                 temp /= base
-                 result++
-           }
-       }
-       return result
+    primaryMultipliers = getPrimaryMultipliers(base);
+    var maxPow         = 26; // up it if need a bigger power
+    var sumPowParts    = {}
+    var results        = []
+
+    for (i in primaryMultipliers){
+        sumPowParts[i]=0
+        for (var j = 1; j <= maxPow; j++) {
+            sumPowParts[i] += Math.floor(number / Math.pow(i, j));
+        }
+        results.push(sumPowParts[i]/primaryMultipliers[i]);
     }
 
-    maxMul = maxSimpleMultiplier(base)
-    //console.log("maxMul", maxMul)
-    return getFactorialZerosCount(number, maxMul);
+    var result = Math.trunc(Math.min.apply(Math, results));
 
+    return result;
 };
-
 
